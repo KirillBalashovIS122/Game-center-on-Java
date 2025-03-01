@@ -26,6 +26,21 @@
 ### **2. Клонирование репозитория**
 
 ```bash
-git clone <URL вашего репозитория>
+git clone <>
 cd game-center
+```
+
+### **3. Запуск через Docker Compose**
+
+- Перейти в папку **docker**
+```bash
+cd docker
+```
+- Запустить проект
+```bash
+docker-compose up --build
+```
+- После запуска откройте браузер и перейдите по адресу
+```bash
+http://localhost:3000
 ```
