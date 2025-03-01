@@ -26,7 +26,7 @@
 ### **2. Клонирование репозитория**
 
 ```bash
-git clone <>
+git clone <git clone https://github.com/KirillBalashovIS122/Game-center-on-Java.git>
 cd game-center
 ```
 
