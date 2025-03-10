@@ -1,20 +1,14 @@
 package com.gamecenter.controller;
 
-import com.gamecenter.model.Game;
-import com.gamecenter.service.GameService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/games")
-@RequiredArgsConstructor
+@RequestMapping("/api")
 public class GameController {
-    private final GameService gameService;
-
-    @GetMapping
-    public List<Game> getAllGames() {
-        return gameService.getAllGames();
+    @GetMapping("/status")
+    public String status() {
+        return "Игровой центр работает!";
     }
 }

@@ -1,22 +1,25 @@
 package com.gamecenter.service;
 
-import com.gamecenter.model.Game;
-import com.gamecenter.repository.GameRepository;
-import lombok.RequiredArgsConstructor;
+import com.gamecenter.model.GameResult;
+import com.gamecenter.repository.GameResultRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class GameService {
-    private final GameRepository gameRepository;
+    private final GameResultRepository repository;
 
-    public List<Game> getAllGames() {
-        return gameRepository.findAll();
+    public GameService(GameResultRepository repository) {
+        this.repository = repository;
     }
 
-    public Game getGameByName(String name) {
-        return gameRepository.findByName(name);
+    public GameResult saveResult(GameResult result) {
+        return repository.save(result);
+    }
+
+    public List<GameResult> getLeaderboard(String gameType) {
+        return gameType == null 
+            ? repository.findAllByOrderByScoreDesc()
+            : repository.findByGameTypeOrderByScoreDesc(gameType);
     }
 }

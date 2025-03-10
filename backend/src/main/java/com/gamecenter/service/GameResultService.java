@@ -12,8 +12,8 @@ import java.util.List;
 public class GameResultService {
     private final GameResultRepository gameResultRepository;
 
-    public List<GameResult> getResultsByGame(String gameName) {
-        return gameResultRepository.findByGameName(gameName);
+    public List<GameResult> getResultsByGame(String gameType) {
+        return gameResultRepository.findByGameTypeOrderByScoreDesc(gameType);
     }
 
     public void saveResult(GameResult result) {

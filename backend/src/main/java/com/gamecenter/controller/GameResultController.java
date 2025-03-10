@@ -1,25 +1,28 @@
 package com.gamecenter.controller;
 
 import com.gamecenter.model.GameResult;
-import com.gamecenter.service.GameResultService;
-import lombok.RequiredArgsConstructor;
+import com.gamecenter.service.GameService;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/results")
-@RequiredArgsConstructor
 public class GameResultController {
-    private final GameResultService gameResultService;
+    private final GameService gameService;
 
-    @GetMapping("/{gameName}")
-    public List<GameResult> getResults(@PathVariable String gameName) {
-        return gameResultService.getResultsByGame(gameName);
+    public GameResultController(GameService gameService) {
+        this.gameService = gameService;
+    }
+
+    @GetMapping
+    public List<GameResult> getAllResults() {
+        return gameService.getLeaderboard(null);
     }
 
     @PostMapping
-    public void saveResult(@RequestBody GameResult result) {
-        gameResultService.saveResult(result);
+    public GameResult saveResult(@Valid @RequestBody GameResult result) {
+        return gameService.saveResult(result);
     }
 }

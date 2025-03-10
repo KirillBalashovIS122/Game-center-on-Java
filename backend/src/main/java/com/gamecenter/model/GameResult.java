@@ -1,31 +1,26 @@
 package com.gamecenter.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
+import lombok.Data;
+import jakarta.validation.constraints.NotBlank; // Исправленный импорт
+import jakarta.validation.constraints.NotNull;  // Исправленный импорт
 import java.time.LocalDateTime;
 
+@Data
 @Entity
-@Table(name = "game_results")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class GameResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Имя игрока обязательно")
     private String playerName;
 
-    @Column(nullable = false)
-    private String gameName;
+    @NotBlank(message = "Тип игры обязателен")
+    private String gameType;
 
-    @Column(nullable = false)
+    @NotNull(message = "Счёт обязателен")
     private int score;
 
-    @Column(nullable = false)
-    private LocalDateTime timestamp;
+    private LocalDateTime date = LocalDateTime.now();
 }

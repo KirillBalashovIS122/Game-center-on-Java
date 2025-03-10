@@ -1,0 +1,28 @@
+.tetris-grid {
+    background: #1a1a1a;
+    border: 2px solid #333;
+  }
+  
+  .row {
+    display: flex;
+  }
+  
+  .cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #222;
+  }
+  
+  .filled {
+    background: #4CAF50;
+  }
+  
+  .game-over {
+    text-align: center;
+    color: white;
+  }
+  
+  .game-over input {
+    margin: 10px;
+    padding: 5px;
+  }
