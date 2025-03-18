@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import GameMenu from './components/common/GameMenu';
-import Leaderboard from './components/common/Leaderboard';
+import Leaderboard from "./common/Leaderboard";
 import SoundToggle from './components/common/SoundToggle';
 import { SoundProvider } from './contexts/SoundContext';
 import './App.css';
