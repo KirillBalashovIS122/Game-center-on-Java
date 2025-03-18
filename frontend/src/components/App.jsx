@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import GameMenu from './components/common/GameMenu';
+import GameMenu from './common/GameMenu';
 import Leaderboard from "./common/Leaderboard";
-import SoundToggle from './components/common/SoundToggle';
-import { SoundProvider } from './contexts/SoundContext';
-import './App.css';
+import SoundToggle from './common/SoundToggle';
+import { SoundProvider } from "../contexts/SoundContext";
+import '../App.css';
 
 function App() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);

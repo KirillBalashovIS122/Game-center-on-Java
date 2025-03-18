@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GameService } from '../../../services/gameService';
 import { useSound } from '../../../contexts/SoundContext';
-import './styles.css';
+import './style.css';
 
 const TetrisBoard = ({ gameId, onGameOver }) => {
   const [gameState, setGameState] = useState(null);

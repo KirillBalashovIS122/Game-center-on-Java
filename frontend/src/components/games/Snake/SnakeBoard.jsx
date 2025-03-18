@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GameService } from '../../../services/gameService';
 import { useSound } from '../../../contexts/SoundContext';
-import './styles.css';
+import './style.css';
 
 const SnakeBoard = ({ gameId, onGameOver }) => {
   const [gameState, setGameState] = useState(null);

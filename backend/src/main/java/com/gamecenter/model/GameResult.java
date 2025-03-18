@@ -2,8 +2,8 @@ package com.gamecenter.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import jakarta.validation.constraints.NotBlank; // Исправленный импорт
-import jakarta.validation.constraints.NotNull;  // Исправленный импорт
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
