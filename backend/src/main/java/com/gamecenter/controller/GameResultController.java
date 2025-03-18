@@ -3,7 +3,6 @@ package com.gamecenter.controller;
 import com.gamecenter.model.GameResult;
 import com.gamecenter.service.GameService;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.validation.Valid;
 import java.util.List;
 
@@ -17,8 +16,8 @@ public class GameResultController {
     }
 
     @GetMapping
-    public List<GameResult> getAllResults() {
-        return gameService.getLeaderboard(null);
+    public List<GameResult> getAllResults(@RequestParam(required = false) String gameType) {
+        return gameService.getLeaderboard(gameType);
     }
 
     @PostMapping
