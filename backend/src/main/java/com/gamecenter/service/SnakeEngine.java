@@ -3,26 +3,27 @@ package com.gamecenter.service;
 import com.gamecenter.model.GameResult;
 import com.gamecenter.model.SnakeState;
 import com.gamecenter.repository.GameResultRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class SnakeEngine {
     private static final int BOARD_WIDTH = 20;
     private static final int BOARD_HEIGHT = 20;
     private final Map<String, SnakeState> games = new HashMap<>();
     private final GameResultRepository gameResultRepository;
 
-    public SnakeEngine(GameResultRepository gameResultRepository) {
-        this.gameResultRepository = gameResultRepository;
-    }
-
-    public String createGame() {
+    public String createGame(String playerName) {
         String gameId = UUID.randomUUID().toString();
         SnakeState state = new SnakeState();
-        state.getSnake().add(new SnakeState.Point(10, 10));
+        state.setPlayerName(playerName);
+        state.setSnake(new ArrayList<>(List.of(new SnakeState.Point(10, 10))));
         state.setDirection(SnakeState.Direction.RIGHT);
+        state.setLastActivity(LocalDateTime.now());
         generateFood(state);
         games.put(gameId, state);
         return gameId;
@@ -32,18 +33,33 @@ public class SnakeEngine {
         SnakeState state = games.get(gameId);
         if (state == null || state.isGameOver()) return state;
 
-        SnakeState.Direction newDirection = SnakeState.Direction.valueOf(direction);
-        SnakeState.Direction currentDirection = state.getDirection();
-
-        if (isOppositeDirection(currentDirection, newDirection)) return state;
-        state.setDirection(newDirection);
-        moveSnake(state);
-        
-        if (state.isGameOver()) {
-            saveGameResult(state);
+        try {
+            SnakeState.Direction newDirection = SnakeState.Direction.valueOf(direction);
+            if (isOppositeDirection(state.getDirection(), newDirection)) return state;
+            state.setDirection(newDirection);
+            moveSnake(state);
+            
+            if (state.isGameOver()) {
+                saveGameResult(state);
+            }
+            
+            state.setLastActivity(LocalDateTime.now());
+            return state;
+        } catch (IllegalArgumentException e) {
+            return state;
         }
-        
-        return state;
+    }
+
+    public Optional<SnakeState> getGameState(String gameId) {
+        return Optional.ofNullable(games.get(gameId));
+    }
+
+    @Scheduled(fixedRate = 60_000)
+    public void cleanupOldGames() {
+        games.entrySet().removeIf(entry -> 
+            entry.getValue().isGameOver() && 
+            entry.getValue().getLastActivity().isBefore(LocalDateTime.now().minusHours(1))
+        );
     }
 
     private boolean isOppositeDirection(SnakeState.Direction current, SnakeState.Direction newDir) {
@@ -112,14 +128,10 @@ public class SnakeEngine {
 
     private void saveGameResult(SnakeState state) {
         GameResult result = new GameResult();
-        result.setPlayerName("Player");
+        result.setPlayerName(state.getPlayerName());
         result.setGameType("Snake");
         result.setScore(state.getScore());
         result.setDate(LocalDateTime.now());
         gameResultRepository.save(result);
-    }
-
-    public SnakeState getGameState(String gameId) {
-        return games.get(gameId);
     }
 }

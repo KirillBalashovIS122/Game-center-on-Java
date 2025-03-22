@@ -1,6 +1,7 @@
 package com.gamecenter.model;
 
 import lombok.Data;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,21 +12,13 @@ public class SnakeState {
     private Direction direction;
     private int score;
     private boolean gameOver;
+    private String playerName;
+    private LocalDateTime lastActivity;
 
     @Data
     public static class Point {
-        private int x;
-        private int y;
-
-        public Point() {}
-        
-        public Point(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX() { return x; }
-        public int getY() { return y; }
+        private final int x;
+        private final int y;
     }
 
     public enum Direction {
