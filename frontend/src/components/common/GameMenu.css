@@ -1,0 +1,66 @@
+.game-menu {
+    text-align: center;
+    padding: 2rem;
+}
+
+.title {
+    color: #3498db;
+    margin-bottom: 2rem;
+    font-size: 2.5em;
+}
+
+.game-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.snake-btn, .tetris-btn {
+    padding: 1.2rem 2.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.snake-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+.tetris-btn {
+    background: linear-gradient(135deg, #e67e22, #d35400);
+    color: white;
+}
+
+.snake-btn:hover, .tetris-btn:hover {
+    transform: translateY(-3px);
+}
+
+.dev-message {
+    background: rgba(44, 62, 80, 0.9);
+    padding: 2rem;
+    border-radius: 15px;
+    color: white;
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
+.dev-message h2 {
+    margin-bottom: 1rem;
+}
+
+.back-btn {
+    background: #95a5a6;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.back-btn:hover {
+    background: #7f8c8d;
+}
