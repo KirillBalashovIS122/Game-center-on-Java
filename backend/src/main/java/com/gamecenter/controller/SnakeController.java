@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/snake")
 public class SnakeController {
-    private final SnakeEngine engine;
+    private final SnakeEngine snakeEngine;
 
-    public SnakeController(SnakeEngine engine) {
-        this.engine = engine;
+    public SnakeController(SnakeEngine snakeEngine) {
+        this.snakeEngine = snakeEngine;
     }
 
     @PostMapping("/new")
     public String createGame() {
-        return engine.createGame();
+        return snakeEngine.createGame();
     }
 
     @PostMapping("/move")
@@ -23,11 +23,11 @@ public class SnakeController {
         @RequestParam String gameId,
         @RequestParam String direction
     ) {
-        return engine.handleAction(gameId, direction);
+        return snakeEngine.handleAction(gameId, direction);
     }
 
     @GetMapping("/state")
     public SnakeState getState(@RequestParam String gameId) {
-        return engine.getGameState(gameId);
+        return snakeEngine.getGameState(gameId);
     }
 }
