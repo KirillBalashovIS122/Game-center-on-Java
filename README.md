@@ -9,7 +9,6 @@
 - **Backend**: Spring Boot (Java 17), PostgreSQL
 - **Frontend**: React, Vite
 - **Инфраструктура**: Docker, Docker Compose, Nginx
-
 ---
 
 ## **Запуск проекта**
@@ -44,3 +43,5 @@ docker-compose up --build
 ```bash
 http://localhost:3000
 ```
+
+тестовая запись
