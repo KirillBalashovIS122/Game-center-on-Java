@@ -27,7 +27,8 @@ public class LoggingConfig {
                 registry.addMapping("/**")
                     .allowedOrigins("http://localhost:3000")
                     .allowedMethods("*")
-                    .allowedHeaders("*");
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
             }
         };
     }
