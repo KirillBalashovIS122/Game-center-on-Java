@@ -32,6 +32,7 @@ services:
     networks:
       - gamecenter-network
 
+<<<<<<< Updated upstream
   nginx:
     image: nginx:alpine
     volumes:
@@ -43,6 +44,8 @@ services:
     networks:
       - gamecenter-network
 
+=======
+>>>>>>> Stashed changes
 volumes:
   postgres_data:
 

@@ -21,7 +21,7 @@ export const GameService = {
   },
 
   sendSnakeAction: async (gameId, direction) => {
-    await api.post(`/snake/move?gameId=${gameId}&direction=${direction}`);
+    await api.post(`/snake/move`, { gameId, direction });
   },
 
   getSnakeState: async (gameId) => {
