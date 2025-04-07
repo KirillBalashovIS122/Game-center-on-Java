@@ -4,24 +4,33 @@ import com.gamecenter.model.GameResult;
 import com.gamecenter.model.SnakeState;
 import com.gamecenter.repository.GameResultRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class SnakeEngine {
+    private static final Logger logger = LoggerFactory.getLogger(SnakeEngine.class);
     private static final int BOARD_WIDTH = 20;
     private static final int BOARD_HEIGHT = 20;
     private final Map<String, SnakeState> games = new HashMap<>();
     private final GameResultRepository gameResultRepository;
 
-    public String createGame(String playerName) {
+    public String createGame() {
         String gameId = UUID.randomUUID().toString();
         SnakeState state = new SnakeState();
-        state.setPlayerName(playerName);
-        state.setSnake(new ArrayList<>(List.of(new SnakeState.Point(10, 10))));
+
+        List<SnakeState.Point> initialSnake = new ArrayList<>();
+        initialSnake.add(new SnakeState.Point(10, 10));
+        initialSnake.add(new SnakeState.Point(9, 10));
+        initialSnake.add(new SnakeState.Point(8, 10));
+        
+        state.setSnake(initialSnake);
         state.setDirection(SnakeState.Direction.RIGHT);
         state.setLastActivity(LocalDateTime.now());
         generateFood(state);
@@ -29,44 +38,49 @@ public class SnakeEngine {
         return gameId;
     }
 
-    public SnakeState handleAction(String gameId, String direction) {
+    @Scheduled(fixedRate = 300)
+    public void autoMoveSnakes() {
+        games.forEach((gameId, state) -> {
+            if (!state.isGameOver()) {
+                moveSnake(state);
+                if (state.isGameOver()) {
+                    logger.info("Game {} ended with score: {}", gameId, state.getScore());
+                }
+            }
+        });
+    }
+
+    public Optional<SnakeState> handleAction(String gameId, String direction) {
         SnakeState state = games.get(gameId);
-        if (state == null || state.isGameOver()) return state;
+        if (state == null || state.isGameOver()) {
+            return Optional.empty();
+        }
 
         try {
             SnakeState.Direction newDirection = SnakeState.Direction.valueOf(direction);
-            if (isOppositeDirection(state.getDirection(), newDirection)) return state;
-            state.setDirection(newDirection);
-            moveSnake(state);
-            
-            if (state.isGameOver()) {
-                saveGameResult(state);
+            if (isOppositeDirection(state.getDirection(), newDirection)) {
+                return Optional.of(state);
             }
             
-            state.setLastActivity(LocalDateTime.now());
-            return state;
+            SnakeState newState = new SnakeState();
+            newState.setSnake(new ArrayList<>(state.getSnake()));
+            newState.setFood(state.getFood());
+            newState.setDirection(newDirection);
+            newState.setScore(state.getScore());
+            newState.setGameOver(state.isGameOver());
+            newState.setPlayerName(state.getPlayerName());
+            newState.setLastActivity(LocalDateTime.now());
+            
+            games.put(gameId, newState);
+            return Optional.of(newState);
         } catch (IllegalArgumentException e) {
-            return state;
+            logger.warn("Invalid direction received: {}", direction);
+            return Optional.empty();
         }
     }
 
     public Optional<SnakeState> getGameState(String gameId) {
         return Optional.ofNullable(games.get(gameId));
-    }
-
-    @Scheduled(fixedRate = 60_000)
-    public void cleanupOldGames() {
-        games.entrySet().removeIf(entry -> 
-            entry.getValue().isGameOver() && 
-            entry.getValue().getLastActivity().isBefore(LocalDateTime.now().minusHours(1))
-        );
-    }
-
-    private boolean isOppositeDirection(SnakeState.Direction current, SnakeState.Direction newDir) {
-        return (current == SnakeState.Direction.UP && newDir == SnakeState.Direction.DOWN) ||
-               (current == SnakeState.Direction.DOWN && newDir == SnakeState.Direction.UP) ||
-               (current == SnakeState.Direction.LEFT && newDir == SnakeState.Direction.RIGHT) ||
-               (current == SnakeState.Direction.RIGHT && newDir == SnakeState.Direction.LEFT);
     }
 
     private void moveSnake(SnakeState state) {
@@ -77,61 +91,80 @@ public class SnakeEngine {
 
         if (isCollision(newHead, state)) {
             state.setGameOver(true);
+            saveGameResult(state);
             return;
         }
 
         state.getSnake().add(0, newHead);
-
-        if (newHead.getX() == state.getFood().getX() && newHead.getY() == state.getFood().getY()) {
+        if (newHead.equals(state.getFood())) {
             state.setScore(state.getScore() + 10);
             generateFood(state);
         } else {
             state.getSnake().remove(state.getSnake().size() - 1);
         }
-    }
-
-    private boolean isCollision(SnakeState.Point newHead, SnakeState state) {
-        if (newHead.getX() < 0 || newHead.getX() >= BOARD_WIDTH ||
-            newHead.getY() < 0 || newHead.getY() >= BOARD_HEIGHT) {
-            return true;
-        }
-
-        return state.getSnake().stream()
-            .skip(1)
-            .anyMatch(point -> 
-                point.getX() == newHead.getX() && 
-                point.getY() == newHead.getY()
-            );
+        state.setLastActivity(LocalDateTime.now());
     }
 
     private void generateFood(SnakeState state) {
         Random rand = new Random();
-        boolean isOnSnake;
-        
+        SnakeState.Point food;
         do {
-            int x = rand.nextInt(BOARD_WIDTH);
-            int y = rand.nextInt(BOARD_HEIGHT);
-            SnakeState.Point food = new SnakeState.Point(x, y);
-            
-            isOnSnake = state.getSnake().stream()
-                .anyMatch(point -> 
-                    point.getX() == food.getX() && 
-                    point.getY() == food.getY()
-                );
-            
-            if (!isOnSnake) {
-                state.setFood(food);
-                return;
-            }
-        } while (true);
+            food = new SnakeState.Point(
+                rand.nextInt(BOARD_WIDTH),
+                rand.nextInt(BOARD_HEIGHT)
+            );
+        } while (state.getSnake().contains(food));
+        state.setFood(food);
+    }
+
+    private boolean isCollision(SnakeState.Point point, SnakeState state) {
+        if (point.getX() < 0 || point.getX() >= BOARD_WIDTH ||
+            point.getY() < 0 || point.getY() >= BOARD_HEIGHT) {
+            return true;
+        }
+        
+        return state.getSnake().stream()
+            .skip(1)
+            .anyMatch(p -> p.equals(point));
+    }
+
+    private boolean isOppositeDirection(SnakeState.Direction current, SnakeState.Direction newDir) {
+        return (current == SnakeState.Direction.UP && newDir == SnakeState.Direction.DOWN) ||
+               (current == SnakeState.Direction.DOWN && newDir == SnakeState.Direction.UP) ||
+               (current == SnakeState.Direction.LEFT && newDir == SnakeState.Direction.RIGHT) ||
+               (current == SnakeState.Direction.RIGHT && newDir == SnakeState.Direction.LEFT);
     }
 
     private void saveGameResult(SnakeState state) {
+        if (state.getPlayerName() == null || state.getPlayerName().isBlank()) {
+            logger.warn("Attempted to save result without player name");
+            return;
+        }
+
         GameResult result = new GameResult();
         result.setPlayerName(state.getPlayerName());
         result.setGameType("Snake");
         result.setScore(state.getScore());
         result.setDate(LocalDateTime.now());
-        gameResultRepository.save(result);
+        
+        try {
+            gameResultRepository.save(result);
+            logger.info("Saved result for player: {}, score: {}", 
+                state.getPlayerName(), state.getScore());
+        } catch (Exception e) {
+            logger.error("Failed to save game result", e);
+        }
+    }
+
+    @Scheduled(fixedRate = 60_000)
+    public void cleanupOldGames() {
+        int initialSize = games.size();
+        games.entrySet().removeIf(entry -> 
+            entry.getValue().isGameOver() && 
+            entry.getValue().getLastActivity().isBefore(LocalDateTime.now().minusHours(1))
+        );
+        if (games.size() != initialSize) {
+            logger.info("Cleaned up {} old games", initialSize - games.size());
+        }
     }
 }

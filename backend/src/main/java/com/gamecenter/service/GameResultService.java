@@ -19,4 +19,8 @@ public class GameResultService {
     public void saveResult(GameResult result) {
         gameResultRepository.save(result);
     }
+
+    public Object getLeaderboard(String string) {
+        throw new UnsupportedOperationException("Unimplemented method 'getLeaderboard'");
+    }
 }

@@ -8,54 +8,52 @@ const GameMenu = () => {
     const [gameId, setGameId] = useState(null);
 
     const startGame = async (gameType) => {
-        if (gameType === 'Tetris') {
-            setSelectedGame('Tetris');
-            return;
-        }
-
         try {
-            const response = await GameService.createSnakeGame();
-            setGameId(response);
-            setSelectedGame('Snake');
+            if (gameType === 'Snake') {
+                const newGameId = await GameService.createSnakeGame();
+                setGameId(newGameId);
+                setSelectedGame('Snake');
+            } else {
+                setSelectedGame('Tetris');
+            }
         } catch (error) {
-            console.error('Ошибка создания игры:', error);
+            console.error('Ошибка запуска игры:', error);
         }
     };
 
     return (
-        <div className="game-menu">
+        <div className="game-menu-container">
             {!selectedGame ? (
-                <>
-                    <h1 className="title">Добро пожаловать в Игровой Центр!</h1>
+                <div className="main-menu">
+                    <h1 className="main-title">🎮 Игровой Центр</h1>
                     <div className="game-buttons">
-                        <button 
-                            onClick={() => startGame('Snake')}
+                        <button
                             className="snake-btn"
+                            onClick={() => startGame('Snake')}
                         >
-                            🐍 Играть в Змейку
+                            Новая игра: Змейка
                         </button>
-                        <button 
-                            onClick={() => startGame('Tetris')}
+                        <button
                             className="tetris-btn"
+                            onClick={() => startGame('Tetris')}
                         >
-                            🧊 Играть в Тетрис
+                            Тетрис (скоро)
                         </button>
                     </div>
-                </>
+                </div>
             ) : selectedGame === 'Snake' ? (
                 <SnakeBoard 
                     gameId={gameId} 
                     onGameOver={() => setSelectedGame(null)}
                 />
             ) : (
-                <div className="dev-message">
-                    <h2>🎮 Тетрис в разработке!</h2>
-                    <p>Я уссердно тружусь над созданием тетроиса!</p>
+                <div className="coming-soon">
+                    <h2>🚧 В разработке</h2>
                     <button 
-                        onClick={() => setSelectedGame(null)}
                         className="back-btn"
+                        onClick={() => setSelectedGame(null)}
                     >
-                        ← Вернуться
+                        Назад в меню
                     </button>
                 </div>
             )}

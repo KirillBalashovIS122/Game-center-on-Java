@@ -5,7 +5,7 @@ import com.gamecenter.exception.GameNotFoundException;
 import com.gamecenter.model.SnakeState;
 import com.gamecenter.service.SnakeEngine;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,21 +18,20 @@ public class SnakeController {
     }
 
     @PostMapping("/new")
-    @ResponseStatus(HttpStatus.CREATED)
-    public String createGame(
-        @RequestParam(required = false, defaultValue = "Player") String playerName
-    ) {
-        return snakeEngine.createGame(playerName);
+    public String createGame() {
+        return snakeEngine.createGame();
     }
 
     @PostMapping("/move")
-    public SnakeState move(@Valid @RequestBody SnakeMoveRequest request) {
-        return snakeEngine.handleAction(request.gameId(), request.direction());
+    public ResponseEntity<SnakeState> move(@Valid @RequestBody SnakeMoveRequest request) {
+        return snakeEngine.handleAction(request.gameId(), request.direction())
+            .map(ResponseEntity::ok)
+            .orElseThrow(() -> new GameNotFoundException("Игра не найдена"));
     }
 
     @GetMapping("/state")
     public SnakeState getState(@RequestParam String gameId) {
         return snakeEngine.getGameState(gameId)
-            .orElseThrow(() -> new GameNotFoundException("Game not found"));
+            .orElseThrow(() -> new GameNotFoundException("Игра не найдена"));
     }
 }

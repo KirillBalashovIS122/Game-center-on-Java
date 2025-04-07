@@ -1,38 +1,39 @@
-.snake-container {
-  position: relative;
-  padding: 1rem;
-  background: #ecf0f1;
-  border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+/* Основные стили */
+.snake-board {
+  background: #2c3e50;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 440px;
+  margin: 20px auto;
 }
 
-.header {
+.game-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding: 0 1rem;
+  margin-bottom: 15px;
+  color: #ecf0f1;
 }
 
 .score {
-  font-size: 1.5em;
-  color: #2c3e50;
-  font-weight: bold;
+  font-size: 1.4em;
+  font-weight: 600;
 }
 
-.controls-hint {
-  color: #7f8c8d;
+.controls {
+  color: #bdc3c7;
   font-style: italic;
 }
 
-.game-grid {
+/* Игровая сетка */
+.grid-container {
   display: grid;
   grid-template-rows: repeat(20, 20px);
   grid-template-columns: repeat(20, 20px);
   gap: 1px;
-  background: #bdc3c7;
-  border: 3px solid #2c3e50;
-  border-radius: 8px;
+  background: #34495e;
+  border: 2px solid #2c3e50;
+  border-radius: 6px;
   overflow: hidden;
 }
 
@@ -44,45 +45,70 @@
   width: 20px;
   height: 20px;
   background: #ecf0f1;
-  transition: background 0.1s;
 }
 
-.grid-cell.snake {
-  background: #3498db;
+.snake-body {
+  background: #27ae60 !important;
   border-radius: 3px;
 }
 
-.grid-cell.food {
+.snake-head {
+  background: #2ecc71 !important;
+  box-shadow: 0 0 8px rgba(46, 204, 113, 0.5);
+}
+
+.food {
   background: #e74c3c;
-  animation: pulse 1s infinite;
+  border-radius: 50%;
+  animation: pulse 1.2s infinite;
 }
 
-.game-over {
+/* Модальное окно */
+.result-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
   text-align: center;
-  padding: 2rem;
+  width: 300px;
 }
 
-.game-over h2 {
-  color: #e74c3c;
-  margin-bottom: 1.5rem;
+.modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin: 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
-.menu-btn {
-  background: #2c3e50;
+.save-btn {
+  background: #3498db;
   color: white;
-  padding: 0.8rem 1.5rem;
+  padding: 10px 20px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   transition: background 0.3s;
 }
 
-.menu-btn:hover {
-  background: #34495e;
+.save-btn:hover {
+  background: #2980b9;
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
+  0% { transform: scale(0.95); }
   50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  100% { transform: scale(0.95); }
 }
