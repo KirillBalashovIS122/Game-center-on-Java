@@ -23,7 +23,7 @@ class GameResultRepositoryTest {
 
     @Test
     @Transactional
-    void findByGameType_ReturnsFilteredResults() {
+    void findByGameTypeOrderByScoreDesc_ReturnsFilteredResults() {
         GameResult snakeResult = new GameResult();
         snakeResult.setGameType("SNAKE");
         snakeResult.setPlayerName("Test Player");
@@ -39,7 +39,7 @@ class GameResultRepositoryTest {
         gameResultRepository.save(snakeResult);
         gameResultRepository.save(tetrisResult);
 
-        List<GameResult> snakeResults = gameResultRepository.findByGameType("SNAKE");
+        List<GameResult> snakeResults = gameResultRepository.findByGameTypeOrderByScoreDesc("SNAKE");
 
         assertEquals(1, snakeResults.size());
         assertEquals("SNAKE", snakeResults.get(0).getGameType());

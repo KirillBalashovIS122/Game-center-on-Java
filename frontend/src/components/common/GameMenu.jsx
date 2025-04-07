@@ -48,7 +48,7 @@ const GameMenu = () => {
                 />
             ) : (
                 <div className="coming-soon">
-                    <h2>🚧 В разработке</h2>
+                    <h2> В разработке</h2>
                     <button 
                         className="back-btn"
                         onClick={() => setSelectedGame(null)}

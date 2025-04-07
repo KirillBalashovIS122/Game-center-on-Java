@@ -1,40 +1,58 @@
 import { api } from './api';
 
 export const GameService = {
-  createTetrisGame: async () => {
-    const response = await api.post('/tetris/new');
-    return response.data;
-  },
+    createSnakeGame: async () => {
+        try {
+            const response = await api.post('/snake/new');
+            console.log('Created new snake game:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating snake game:', error);
+            throw error;
+        }
+    },
 
-  sendTetrisAction: async (gameId, action) => {
-    await api.post(`/tetris/action?gameId=${gameId}&action=${action}`);
-  },
+    sendSnakeAction: async (gameId, direction) => {
+        try {
+            await api.post('/snake/move', { 
+                gameId, 
+                direction 
+            });
+            console.log('Sent action:', direction, 'for game:', gameId);
+        } catch (error) {
+            console.error('Error sending snake action:', error);
+            throw error;
+        }
+    },
 
-  getTetrisState: async (gameId) => {
-    const response = await api.get(`/tetris/state?gameId=${gameId}`);
-    return response.data;
-  },
+    getSnakeState: async (gameId) => {
+        try {
+            const response = await api.get(`/snake/state?gameId=${gameId}`);
+            console.log('Received game state:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching snake state:', error);
+            return {
+                snake: [],
+                food: {x: 0, y: 0},
+                score: 0,
+                gameOver: true,
+                direction: 'RIGHT'
+            };
+        }
+    },
 
-  createSnakeGame: async () => {
-    const response = await api.post('/snake/new');
-    return response.data;
-  },
-
-  sendSnakeAction: async (gameId, direction) => {
-    await api.post(`/snake/move`, { gameId, direction });
-  },
-
-  getSnakeState: async (gameId) => {
-    const response = await api.get(`/snake/state?gameId=${gameId}`);
-    return response.data;
-  },
-
-  saveResult: async (gameType, score, playerName) => {
-    await api.post('/results', { gameType, score, playerName });
-  },
-
-  getLeaderboard: async (gameType) => {
-    const response = await api.get(`/results?gameType=${gameType}`);
-    return response.data;
-  }
+    saveResult: async (result) => {
+        try {
+            await api.post('/results', {
+                playerName: result.playerName,
+                score: result.score,
+                gameType: result.gameType
+            });
+            console.log('Saved result for:', result.playerName);
+        } catch (error) {
+            console.error('Error saving game result:', error);
+            throw error;
+        }
+    }
 };

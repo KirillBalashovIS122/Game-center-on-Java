@@ -1,10 +1,10 @@
-/* Основные стили */
 .snake-board {
   background: #2c3e50;
   padding: 20px;
   border-radius: 12px;
   max-width: 440px;
   margin: 20px auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .game-header {
@@ -25,7 +25,6 @@
   font-style: italic;
 }
 
-/* Игровая сетка */
 .grid-container {
   display: grid;
   grid-template-rows: repeat(20, 20px);
@@ -45,6 +44,7 @@
   width: 20px;
   height: 20px;
   background: #ecf0f1;
+  border: 1px solid #bdc3c7;
 }
 
 .snake-body {
@@ -60,10 +60,9 @@
 .food {
   background: #e74c3c;
   border-radius: 50%;
-  animation: pulse 1.2s infinite;
+  animation: foodPulse 1.2s infinite ease-in-out;
 }
 
-/* Модальное окно */
 .result-modal {
   position: fixed;
   top: 0;
@@ -82,7 +81,9 @@
   padding: 25px;
   border-radius: 10px;
   text-align: center;
-  width: 300px;
+  width: 90%;
+  max-width: 300px;
+  color: #333;
 }
 
 .modal-content input {
@@ -91,6 +92,7 @@
   margin: 15px 0;
   border: 1px solid #ddd;
   border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .save-btn {
@@ -107,8 +109,52 @@
   background: #2980b9;
 }
 
-@keyframes pulse {
-  0% { transform: scale(0.95); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(0.95); }
+.back-btn {
+  background: #e74c3c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s;
+}
+
+.back-btn:hover {
+  background: #c0392b;
+}
+
+@keyframes foodPulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+@media (max-width: 480px) {
+  .snake-board {
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  .grid-container {
+    grid-template-rows: repeat(20, 15px);
+    grid-template-columns: repeat(20, 15px);
+  }
+
+  .grid-cell {
+    width: 15px;
+    height: 15px;
+  }
+
+  .score, .controls {
+    font-size: 1.2em;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .save-btn, .back-btn {
+    padding: 8px 16px;
+  }
 }
