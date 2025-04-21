@@ -6,9 +6,9 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 @Configuration
 public class LoggingConfig {
-    
+
     @Bean
-    public CommonsRequestLoggingFilter requestLoggingFilter() {
+    CommonsRequestLoggingFilter requestLoggingFilter() {
         CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
         filter.setIncludeQueryString(true);
         filter.setIncludePayload(true);

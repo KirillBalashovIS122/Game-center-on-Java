@@ -18,14 +18,29 @@ public class TetrisEngine {
 
     public TetrisState handleAction(String gameId, String action) {
         TetrisState state = games.get(gameId);
-        if (state == null || state.isGameOver()) return null;
+        if (state == null || state.isGameOver()) {
+            return state;
+        }
 
         switch (action) {
-            case "MOVE_LEFT" -> state.moveLeft();
-            case "MOVE_RIGHT" -> state.moveRight();
-            case "ROTATE" -> state.rotate();
-            case "DROP" -> state.drop();
+            case "MOVE_LEFT":
+                state.moveLeft();
+                break;
+            case "MOVE_RIGHT":
+                state.moveRight();
+                break;
+            case "ROTATE":
+                state.rotate();
+                break;
+            case "SOFT_DROP":
+                state.softDrop();
+                break;
+            case "HARD_DROP":
+                state.drop();
+                break;
         }
+
+        state.update();
         return state;
     }
 

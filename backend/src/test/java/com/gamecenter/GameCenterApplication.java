@@ -18,7 +18,7 @@ public class GameCenterApplication {
     public static class CorsConfig {
 
         @Bean
-        public WebMvcConfigurer corsConfigurer() {
+        WebMvcConfigurer corsConfigurer() {
             return new WebMvcConfigurer() {
                 @Override
                 public void addCorsMappings(CorsRegistry registry) {

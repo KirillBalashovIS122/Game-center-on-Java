@@ -91,16 +91,14 @@ public class SnakeEngine {
         return Optional.ofNullable(games.get(gameId));
     }
 
-    private SnakeState moveSnake(SnakeState state) {
+    public SnakeState moveSnake(SnakeState state) {
         SnakeState newState = deepCopyState(state);
         
-        // Calculate new head position with screen wrapping
         SnakeState.Point head = newState.getSnake().get(0);
         int newX = (head.getX() + newState.getDirection().dx + BOARD_WIDTH) % BOARD_WIDTH;
         int newY = (head.getY() + newState.getDirection().dy + BOARD_HEIGHT) % BOARD_HEIGHT;
         SnakeState.Point newHead = new SnakeState.Point(newX, newY);
 
-        // Check for collisions (except tail)
         if (newState.getSnake().stream()
             .limit(newState.getSnake().size() - 1)
             .anyMatch(p -> p.equals(newHead))) {
@@ -110,7 +108,6 @@ public class SnakeEngine {
 
         newState.getSnake().add(0, newHead);
         
-        // Check if food was eaten
         if (newHead.equals(newState.getFood())) {
             newState.setScore(newState.getScore() + 10);
             generateFood(newState);

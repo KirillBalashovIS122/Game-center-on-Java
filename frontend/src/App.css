@@ -3,6 +3,7 @@ body {
   font-family: 'game-font', sans-serif;
   background-color: #1a1a1a;
   color: white;
+  min-height: 100vh;
 }
 
 .app {
@@ -10,53 +11,139 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
 }
 
 nav {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
 }
 
 nav button {
-  margin: 0 10px;
+  padding: 12px 25px;
+  background-color: #27ae60;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  min-width: 180px;
+}
+
+nav button:hover {
+  background-color: #219a52;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.game-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto;
+  position: relative;
+}
+
+.game-grid {
+  background: #2c3e50;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  margin: 0 auto;
+}
+
+.game-modal {
+  background: rgba(44, 62, 80, 0.95);
+  padding: 2rem;
+  border-radius: 15px;
+  color: white;
+  text-align: center;
+  max-width: 400px;
+  margin: 20px auto;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.game-modal h2 {
+  color: #f1c40f;
+  margin-bottom: 1.5rem;
+}
+
+.game-modal input {
+  width: 100%;
+  padding: 12px;
+  margin: 15px 0;
+  background: #34495e;
+  border: 1px solid #2c3e50;
+  color: white;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.game-modal button {
   padding: 10px 20px;
-  background-color: #4CAF50;
+  margin: 5px;
   border: none;
-  color: white;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
 }
 
-.game-menu {
-  text-align: center;
-}
-
-.game-buttons button {
-  margin: 10px;
-  padding: 15px 30px;
-  background-color: #3498db;
-  border: none;
+.game-modal .save-btn {
+  background: #2ecc71;
   color: white;
-  cursor: pointer;
 }
 
-.game-over {
-  text-align: center;
+.game-modal .back-btn {
+  background: #95a5a6;
+  color: white;
 }
 
-.game-over input {
-  margin: 10px;
-  padding: 5px;
+.game-modal button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .leaderboard {
-  text-align: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
 }
 
-.leaderboard table {
-  margin: 0 auto;
-  border-collapse: collapse;
+.leaderboard select {
+  padding: 8px 12px;
+  margin-bottom: 15px;
+  background: #34495e;
+  color: white;
+  border: none;
+  border-radius: 5px;
 }
 
-.leaderboard th, .leaderboard td {
-  padding: 10px;
-  border: 1px solid #333;
+@media (max-width: 768px) {
+  .app {
+    padding: 10px;
+  }
+  
+  nav button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    min-width: 140px;
+  }
+  
+  .game-container {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+  
+  .game-modal {
+    padding: 1.5rem;
+    margin: 10px;
+  }
 }

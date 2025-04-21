@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GameService } from '../../services/gameService';
 import SnakeBoard from '../games/Snake/SnakeBoard';
+import TetrisBoard from '../games/Tetris/TetrisBoard';
 import './GameMenu.css';
 
 const GameMenu = () => {
@@ -9,13 +10,15 @@ const GameMenu = () => {
 
     const startGame = async (gameType) => {
         try {
+            let newGameId;
             if (gameType === 'Snake') {
-                const newGameId = await GameService.createSnakeGame();
-                setGameId(newGameId);
-                setSelectedGame('Snake');
-            } else {
-                setSelectedGame('Tetris');
+                newGameId = await GameService.createSnakeGame();
+            } else if (gameType === 'Tetris') {
+                newGameId = await GameService.createTetrisGame();
             }
+            
+            setGameId(newGameId);
+            setSelectedGame(gameType);
         } catch (error) {
             console.error('Ошибка запуска игры:', error);
         }
@@ -37,7 +40,7 @@ const GameMenu = () => {
                             className="tetris-btn"
                             onClick={() => startGame('Tetris')}
                         >
-                            Тетрис (скоро)
+                            Новая игра: Тетрис
                         </button>
                     </div>
                 </div>
@@ -46,17 +49,12 @@ const GameMenu = () => {
                     gameId={gameId} 
                     onGameOver={() => setSelectedGame(null)}
                 />
-            ) : (
-                <div className="coming-soon">
-                    <h2> В разработке</h2>
-                    <button 
-                        className="back-btn"
-                        onClick={() => setSelectedGame(null)}
-                    >
-                        Назад в меню
-                    </button>
-                </div>
-            )}
+            ) : selectedGame === 'Tetris' ? (
+                <TetrisBoard 
+                    gameId={gameId}
+                    onGameOver={() => setSelectedGame(null)}
+                />
+            ) : null}
         </div>
     );
 };
