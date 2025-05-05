@@ -25,14 +25,16 @@ class IntegrationTest {
 
     @Test
     void fullGameFlowTest() {
+        // Создание новой игры
         String gameId = restTemplate.postForObject(
             "http://localhost:" + port + "/api/snake/new", 
             null, 
             String.class
         );
-        assertNotNull(gameId);
-        assertFalse(gameId.isEmpty());
+        assertNotNull(gameId, "Game ID should not be null");
+        assertFalse(gameId.isEmpty(), "Game ID should not be empty");
 
+        // Выполнение хода
         SnakeMoveRequest moveRequest = new SnakeMoveRequest(gameId, "RIGHT");
         ResponseEntity<SnakeState> response = restTemplate.postForEntity(
             "http://localhost:" + port + "/api/snake/move",
@@ -40,8 +42,13 @@ class IntegrationTest {
             SnakeState.class
         );
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("RIGHT", response.getBody().getDirection().name());
+        // Проверка ответа
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Response status should be OK");
+        SnakeState snakeState = response.getBody();
+        assertNotNull(snakeState, "Response body should not be null");
+        
+        // Проверка направления змейки
+        assertNotNull(snakeState.getDirection(), "Snake direction should not be null");
+        assertEquals("RIGHT", snakeState.getDirection().name(), "Snake direction should be RIGHT");
     }
 }

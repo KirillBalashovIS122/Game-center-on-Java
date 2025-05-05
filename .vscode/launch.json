@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-GameCenterApplication<gamecenter>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.gamecenter.GameCenterApplication",
+            "projectName": "gamecenter",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
