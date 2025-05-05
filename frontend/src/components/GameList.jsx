@@ -7,17 +7,17 @@ const GameList = () => {
     useEffect(() => {
         axios.get('/api/games')
             .then(response => {
-                console.log("Response data:", response.data);
+                console.log("Данные ответа:", response.data);
                 setGames(response.data);
             })
             .catch(error => {
-                console.error("Error fetching games:", error);
+                console.error("Ошибка получения списка игр:", error);
             });
     }, []);
 
     return (
         <div>
-            <h1>Games</h1>
+            <h1>Список игр</h1>
             {games.length > 0 ? (
                 <ul>
                     {games.map(game => (
@@ -27,7 +27,7 @@ const GameList = () => {
                     ))}
                 </ul>
             ) : (
-                <p>No games found.</p>
+                <p>Игры не найдены</p>
             )}
         </div>
     );

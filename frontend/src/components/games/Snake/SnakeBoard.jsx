@@ -13,12 +13,14 @@ const SnakeBoard = ({ gameId, onGameOver }) => {
     const [playerName, setPlayerName] = useState('');
     const [showNameModal, setShowNameModal] = useState(false);
     const [score, setScore] = useState(0);
-    const [gameStatus, setGameStatus] = useState('playing');
     const animationFrameRef = useRef();
-    const lastUpdateTimeRef = useRef(0);
-    const gameLoopInterval = 100;
+    const lastDirectionRef = useRef('RIGHT');
+    const pendingDirectionRef = useRef(null);
 
     useEffect(() => {
+        let lastUpdate = performance.now();
+        const UPDATE_INTERVAL = 100;
+
         const fetchGameState = async () => {
             try {
                 const state = await GameService.getSnakeState(gameId);
@@ -36,14 +38,14 @@ const SnakeBoard = ({ gameId, onGameOver }) => {
                     }
                 }
             } catch (error) {
-                console.error('Error fetching game state:', error);
+                console.error('Ошибка получения состояния игры:', error);
             }
         };
 
         const gameLoop = (timestamp) => {
-            if (timestamp - lastUpdateTimeRef.current > gameLoopInterval) {
+            if (timestamp - lastUpdate >= UPDATE_INTERVAL) {
                 fetchGameState();
-                lastUpdateTimeRef.current = timestamp;
+                lastUpdate = timestamp;
             }
             animationFrameRef.current = requestAnimationFrame(gameLoop);
         };
@@ -57,8 +59,6 @@ const SnakeBoard = ({ gameId, onGameOver }) => {
 
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (gameStatus !== 'playing') return;
-
             const directionMap = {
                 'ArrowUp': 'UP',
                 'ArrowDown': 'DOWN',
@@ -66,18 +66,29 @@ const SnakeBoard = ({ gameId, onGameOver }) => {
                 'ArrowRight': 'RIGHT'
             };
 
-            if (directionMap[e.key]) {
-                GameService.sendSnakeAction(gameId, directionMap[e.key]);
+            const newDirection = directionMap[e.key];
+            if (!newDirection) return;
+
+            const opposites = {
+                'UP': 'DOWN',
+                'DOWN': 'UP',
+                'LEFT': 'RIGHT',
+                'RIGHT': 'LEFT'
+            };
+
+            if (newDirection !== opposites[lastDirectionRef.current]) {
+                pendingDirectionRef.current = newDirection;
+                GameService.sendSnakeAction(gameId, newDirection);
+                lastDirectionRef.current = newDirection;
                 e.preventDefault();
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keydown', handleKeyDown, { passive: false });
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [gameId, gameStatus]);
+    }, [gameId]);
 
     const handleGameOver = (state) => {
-        setGameStatus('over');
         setScore(state?.score || 0);
         setShowNameModal(true);
     };
@@ -94,7 +105,7 @@ const SnakeBoard = ({ gameId, onGameOver }) => {
             setShowNameModal(false);
             onGameOver();
         } catch (error) {
-            console.error('Error saving result:', error);
+            console.error('Ошибка сохранения результата:', error);
         }
     };
 
@@ -111,60 +122,48 @@ const SnakeBoard = ({ gameId, onGameOver }) => {
         return <div key={`${x}-${y}`} className={className} />;
     };
 
-    const renderGrid = () => {
-        const grid = [];
-        for (let y = 0; y < 20; y++) {
-            const row = [];
-            for (let x = 0; x < 20; x++) {
-                row.push(renderCell(x, y));
-            }
-            grid.push(
-                <div key={y} className="grid-row">
-                    {row}
-                </div>
-            );
-        }
-        return grid;
-    };
-
     return (
         <div className="snake-board">
             {showNameModal && (
                 <div className="result-modal">
                     <div className="modal-content">
-                        <h3>Игра окончена! Ваш счёт: {score}</h3>
+                        <h2>ИГРА ОКОНЧЕНА</h2>
+                        <p className="final-score">ВАШ СЧЁТ: {score}</p>
                         <input
                             type="text"
-                            placeholder="Enter your name"
+                            placeholder="ВВЕДИТЕ ВАШЕ ИМЯ"
                             value={playerName}
                             onChange={(e) => setPlayerName(e.target.value)}
-                            className="name-input"
+                            maxLength={12}
                         />
-                        <button 
-                            onClick={handleSaveResult}
-                            className="save-btn"
-                        >
-                            Сохранить
-                        </button>
+                        <div className="modal-buttons">
+                            <button onClick={handleSaveResult} className="save-btn">
+                                СОХРАНИТЬ
+                            </button>
+                            <button onClick={() => onGameOver()} className="back-btn">
+                                В МЕНЮ
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
 
             <div className="game-header">
-                <div className="score">Счёт: {gameState?.score || 0}</div>
-                <div className="controls">Управление: стрелки</div>
+                <div className="score">СЧЁТ: {gameState?.score || 0}</div>
+                <div className="controls">ИСПОЛЬЗУЙТЕ СТРЕЛКИ</div>
             </div>
 
             <div className="grid-container">
-                {renderGrid()}
+                {Array(20).fill().map((_, y) => (
+                    <div key={y} className="grid-row">
+                        {Array(20).fill().map((_, x) => renderCell(x, y))}
+                    </div>
+                ))}
             </div>
 
-            {gameStatus === 'over' && !showNameModal && (
-                <button 
-                    onClick={() => onGameOver()}
-                    className="back-btn"
-                >
-                    Вернуться в меню
+            {gameState.gameOver && !showNameModal && (
+                <button onClick={onGameOver} className="back-btn">
+                    ВЕРНУТЬСЯ В МЕНЮ
                 </button>
             )}
         </div>

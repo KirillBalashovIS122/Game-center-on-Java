@@ -9,20 +9,20 @@ const CreateGameForm = () => {
         e.preventDefault();
         axios.post('/api/games', { name, description })
             .then(response => {
-                console.log("Game created:", response.data);
+                console.log("Игра создана:", response.data);
                 setName('');
                 setDescription('');
             })
             .catch(error => {
-                console.error("Error creating game:", error);
+                console.error("Ошибка создания игры:", error);
             });
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <h2>Create New Game</h2>
+            <h2>Создать новую игру</h2>
             <div>
-                <label>Name:</label>
+                <label>Название:</label>
                 <input
                     type="text"
                     value={name}
@@ -31,14 +31,14 @@ const CreateGameForm = () => {
                 />
             </div>
             <div>
-                <label>Description:</label>
+                <label>Описание:</label>
                 <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
             </div>
-            <button type="submit">Create Game</button>
+            <button type="submit">Создать игру</button>
         </form>
     );
 };

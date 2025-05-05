@@ -28,19 +28,19 @@ const GameMenu = () => {
         <div className="game-menu-container">
             {!selectedGame ? (
                 <div className="main-menu">
-                    <h1 className="main-title">🎮 Игровой Центр</h1>
+                    <h1 className="main-title">ИГРОВОЙ ЦЕНТР</h1>
                     <div className="game-buttons">
                         <button
                             className="snake-btn"
                             onClick={() => startGame('Snake')}
                         >
-                            Новая игра: Змейка
+                            ЗМЕЙКА
                         </button>
                         <button
                             className="tetris-btn"
                             onClick={() => startGame('Tetris')}
                         >
-                            Новая игра: Тетрис
+                            ТЕТРИС
                         </button>
                     </div>
                 </div>

@@ -9,13 +9,13 @@ public class TetrisState {
     private static final int WIDTH = 10;
     private static final int HEIGHT = 20;
     private static final int[][][] SHAPES = {
-        {{1, 1, 1, 1}},
-        {{1, 1}, {1, 1}},
-        {{0, 1, 0}, {1, 1, 1}},
-        {{1, 0}, {1, 0}, {1, 1}},
-        {{0, 1}, {0, 1}, {1, 1}},
-        {{0, 1, 1}, {1, 1, 0}},
-        {{1, 1, 0}, {0, 1, 1}}
+        {{1, 1, 1, 1}},                // I-фигура
+        {{1, 1}, {1, 1}},              // O-фигура
+        {{0, 1, 0}, {1, 1, 1}},        // T-фигура
+        {{1, 0}, {1, 0}, {1, 1}},      // L-фигура
+        {{0, 1}, {0, 1}, {1, 1}},      // J-фигура
+        {{0, 1, 1}, {1, 1, 0}},        // Z-фигура
+        {{1, 1, 0}, {0, 1, 1}}         // S-фигура
     };
     
     private int[][] board = new int[HEIGHT][WIDTH];
@@ -122,7 +122,10 @@ public class TetrisState {
                 i++;
             }
         }
-        score += linesCleared * 100;
+        
+        if (linesCleared > 0) {
+            score += linesCleared * 100;
+        }
     }
 
     public boolean update() {
@@ -159,7 +162,6 @@ public class TetrisState {
         
         while (!checkCollision(pieceX, pieceY + 1, currentPiece)) {
             pieceY++;
-            score += 2;
         }
         mergePiece();
     }
@@ -167,7 +169,6 @@ public class TetrisState {
     public void softDrop() {
         if (!gameOver && !needsNewPiece && !checkCollision(pieceX, pieceY + 1, currentPiece)) {
             pieceY++;
-            score += 1;
         }
     }
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { GameService } from '../../services/gameService';
+import './Leaderboard.css';
 
 const Leaderboard = ({ gameType }) => {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -14,13 +15,13 @@ const Leaderboard = ({ gameType }) => {
 
   return (
     <div className="leaderboard">
-      <h2>Таблица лидеров: {gameType}</h2>
+      <h2>ТАБЛИЦА ЛИДЕРОВ: {gameType === 'Tetris' ? 'ТЕТРИС' : 'ЗМЕЙКА'}</h2>
       <table>
         <thead>
           <tr>
-            <th>Имя</th>
-            <th>Очки</th>
-            <th>Дата</th>
+            <th>ИГРОК</th>
+            <th>СЧЁТ</th>
+            <th>ДАТА</th>
           </tr>
         </thead>
         <tbody>
@@ -28,7 +29,7 @@ const Leaderboard = ({ gameType }) => {
             <tr key={index}>
               <td>{entry.playerName}</td>
               <td>{entry.score}</td>
-              <td>{new Date(entry.date).toLocaleDateString()}</td>
+              <td>{new Date(entry.date).toLocaleDateString('ru-RU')}</td>
             </tr>
           ))}
         </tbody>

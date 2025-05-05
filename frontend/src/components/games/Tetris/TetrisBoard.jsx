@@ -1,66 +1,64 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { GameService } from '../../../services/gameService';
-import { useSound } from '../../../contexts/SoundContext';
 import './style.css';
 
 const SHAPES = [
-    [[1, 1, 1, 1]],
-    [[1, 1], [1, 1]],
-    [[0, 1, 0], [1, 1, 1]],
-    [[1, 0], [1, 0], [1, 1]],
-    [[0, 1], [0, 1], [1, 1]],
-    [[0, 1, 1], [1, 1, 0]],
-    [[1, 1, 0], [0, 1, 1]]
+    [[1, 1, 1, 1]], // I
+    [[1, 1], [1, 1]], // O
+    [[0, 1, 0], [1, 1, 1]], // T
+    [[1, 0], [1, 0], [1, 1]], // L
+    [[0, 1], [0, 1], [1, 1]], // J
+    [[0, 1, 1], [1, 1, 0]], // S
+    [[1, 1, 0], [0, 1, 1]] // Z
 ];
 
 const TetrisBoard = ({ gameId, onGameOver }) => {
     const [gameState, setGameState] = useState(null);
     const [playerName, setPlayerName] = useState('');
+    const [showNameModal, setShowNameModal] = useState(false);
+    const [score, setScore] = useState(0);
     const [dropSpeed, setDropSpeed] = useState(1000);
     const [lastDrop, setLastDrop] = useState(Date.now());
-    const { playSound } = useSound();
 
     const updateGameState = useCallback(async () => {
         try {
             const state = await GameService.getTetrisState(gameId);
+            console.log('Game State:', state); // Отладка состояния
             setGameState(state);
-            if (state?.gameOver) {
-                playSound('gameover.mp3');
+            if (state.gameOver) {
+                handleGameOver(state);
             }
         } catch (error) {
-            console.error("Failed to get game state:", error);
+            console.error("Не удалось получить состояние игры:", error);
         }
-    }, [gameId, playSound]);
+    }, [gameId]);
 
     useEffect(() => {
-        const interval = setInterval(async () => {
-            await updateGameState();
-        }, 100);
+        const interval = setInterval(updateGameState, 100);
         return () => clearInterval(interval);
     }, [updateGameState]);
 
     useEffect(() => {
         const handleKeyPress = (e) => {
             const actions = {
-                ArrowUp: { action: 'ROTATE', sound: 'rotate.mp3' },
-                KeyZ: { action: 'ROTATE', sound: 'rotate.mp3' },
-                KeyX: { action: 'ROTATE', sound: 'rotate.mp3' },
-                ArrowLeft: { action: 'MOVE_LEFT', sound: 'move.mp3' },
-                ArrowRight: { action: 'MOVE_RIGHT', sound: 'move.mp3' },
-                ArrowDown: { action: 'SOFT_DROP', sound: 'drop.mp3' },
-                Space: { action: 'HARD_DROP', sound: 'harddrop.mp3' }
+                ArrowUp: 'ROTATE',
+                KeyZ: 'ROTATE',
+                KeyX: 'ROTATE',
+                ArrowLeft: 'MOVE_LEFT',
+                ArrowRight: 'MOVE_RIGHT',
+                ArrowDown: 'SOFT_DROP',
+                Space: 'HARD_DROP'
             };
             
             if (actions[e.code]) {
-                GameService.sendTetrisAction(gameId, actions[e.code].action);
-                playSound(actions[e.code].sound);
+                GameService.sendTetrisAction(gameId, actions[e.code]);
                 e.preventDefault();
             }
         };
 
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [gameId, playSound]);
+    }, [gameId]);
 
     useEffect(() => {
         const autoDrop = setInterval(async () => {
@@ -80,17 +78,24 @@ const TetrisBoard = ({ gameId, onGameOver }) => {
         return () => clearInterval(autoDrop);
     }, [gameId, gameState, lastDrop, dropSpeed]);
 
-    const handleSave = async () => {
+    const handleGameOver = (state) => {
+        setScore(state?.score || 0);
+        setShowNameModal(true);
+        console.log('Game Over triggered with state:', state); // Отладка завершения
+    };
+
+    const handleSaveResult = async () => {
         if (!playerName.trim()) return;
         try {
             await GameService.saveResult({
                 playerName: playerName.trim(),
-                score: gameState.score,
+                score: score,
                 gameType: 'Tetris'
             });
+            setShowNameModal(false);
             onGameOver();
         } catch (error) {
-            console.error("Failed to save result:", error);
+            console.error("Не удалось сохранить результат:", error);
         }
     };
 
@@ -101,16 +106,17 @@ const TetrisBoard = ({ gameId, onGameOver }) => {
         
         for (let y = 0; y < 20; y++) {
             for (let x = 0; x < 10; x++) {
-                displayBoard[y][x] = gameState.board[y][x];
+                if (gameState.board[y][x]) displayBoard[y][x] = 1;
             }
         }
 
         if (gameState.currentPiece && !gameState.gameOver) {
+            console.log('Current Piece:', gameState.currentPiece, 'at (', gameState.pieceX, ',', gameState.pieceY, ')'); // Отладка текущей фигуры
             for (let i = 0; i < gameState.currentPiece.length; i++) {
                 for (let j = 0; j < gameState.currentPiece[i].length; j++) {
                     const y = gameState.pieceY + i;
                     const x = gameState.pieceX + j;
-                    if (y >= 0 && gameState.currentPiece[i][j] && x >= 0 && x < 10 && y < 20) {
+                    if (y >= 0 && y < 20 && x >= 0 && x < 10 && gameState.currentPiece[i][j]) {
                         displayBoard[y][x] = 2;
                     }
                 }
@@ -134,45 +140,53 @@ const TetrisBoard = ({ gameId, onGameOver }) => {
 
     return (
         <div className="tetris-container">
-            {gameState?.gameOver ? (
-                <div className="game-over-modal">
-                    <h2>Игра окончена! Счет: {gameState.score}</h2>
-                    <input
-                        type="text"
-                        placeholder="Ваше имя"
-                        value={playerName}
-                        onChange={(e) => setPlayerName(e.target.value)}
-                        maxLength={20}
-                    />
-                    <button onClick={handleSave}>Сохранить результат</button>
-                </div>
-            ) : (
-                <>
-                    <div className="score-board">Счет: {gameState?.score || 0}</div>
-                    <div className="tetris-grid">{renderBoard()}</div>
-                    <div className="next-piece">
-                        Следующая:
-                        <div className="preview">
-                            {gameState?.nextPiece !== undefined && SHAPES[gameState.nextPiece].map((row, i) => (
-                                <div key={i} className="preview-row">
-                                    {row.map((cell, j) => (
-                                        <div key={j} className={`preview-cell ${cell ? 'filled' : ''}`} />
-                                    ))}
-                                </div>
-                            ))}
+            {showNameModal && (
+                <div className="result-modal">
+                    <div className="modal-content">
+                        <h2>ИГРА ОКОНЧЕНА</h2>
+                        <p className="final-score">ВАШ СЧЁТ: {score}</p>
+                        <input
+                            type="text"
+                            placeholder="ВВЕДИТЕ ВАШЕ ИМЯ"
+                            value={playerName}
+                            onChange={(e) => setPlayerName(e.target.value)}
+                            maxLength={12}
+                        />
+                        <div className="modal-buttons">
+                            <button onClick={handleSaveResult} className="save-btn">
+                                СОХРАНИТЬ
+                            </button>
+                            <button onClick={() => onGameOver()} className="back-btn">
+                                В МЕНЮ
+                            </button>
                         </div>
                     </div>
-                    <div className="controls-info">
-                        <p>Управление:</p>
-                        <ul>
-                            <li>← → - Движение</li>
-                            <li>↑, Z, X - Поворот</li>
-                            <li>↓ - Ускорение</li>
-                            <li>Пробел - Мгновенное падение</li>
-                        </ul>
-                    </div>
-                </>
+                </div>
             )}
+            
+            <div className="score-board">СЧЁТ: {gameState?.score || 0}</div>
+            <div className="tetris-grid">{renderBoard()}</div>
+            <div className="next-piece">
+                <span>СЛЕДУЮЩАЯ ФИГУРА:</span>
+                <div className="preview">
+                    {gameState?.nextPiece !== undefined && SHAPES[gameState.nextPiece].map((row, i) => (
+                        <div key={i} className="preview-row">
+                            {row.map((cell, j) => (
+                                <div key={j} className={`preview-cell ${cell ? 'filled' : ''}`} />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <div className="controls-info">
+                <p>УПРАВЛЕНИЕ:</p>
+                <ul>
+                    <li>← → : ПЕРЕМЕЩЕНИЕ</li>
+                    <li>↑, Z, X : ПОВОРОТ</li>
+                    <li>↓ : МЯГКОЕ ПАДЕНИЕ</li>
+                    <li>ПРОБЕЛ : ЖЁСТКОЕ ПАДЕНИЕ</li>
+                </ul>
+            </div>
         </div>
     );
 };

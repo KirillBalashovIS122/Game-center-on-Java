@@ -1,0 +1,87 @@
+.leaderboard {
+  background: rgba(26, 26, 46, 0.9);
+  border-radius: 16px;
+  padding: 2.5rem;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  max-width: 800px;
+  margin: 2rem auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.leaderboard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+}
+
+.leaderboard h2 {
+  color: #ff6b6b;
+  font-family: 'VT323', monospace;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+.leaderboard table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'VT323', monospace;
+}
+
+.leaderboard th {
+  color: #ff6b6b;
+  padding: 1.2rem;
+  border-bottom: 2px solid rgba(255, 107, 107, 0.3);
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  text-align: left;
+}
+
+.leaderboard td {
+  padding: 1.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.3rem;
+}
+
+.leaderboard tr:last-child td {
+  border-bottom: none;
+}
+
+.leaderboard tr:hover {
+  background: rgba(255, 107, 107, 0.1);
+}
+
+@media (max-width: 768px) {
+  .leaderboard {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .leaderboard h2 {
+    font-size: 2rem;
+  }
+  
+  .leaderboard th, 
+  .leaderboard td {
+    padding: 0.8rem;
+    font-size: 1.1rem;
+  }
+}
