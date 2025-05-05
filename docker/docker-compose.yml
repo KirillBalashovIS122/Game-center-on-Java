@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres:
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: gamecenter
@@ -7,6 +7,8 @@ services:
       POSTGRES_PASSWORD: masterkey
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     networks:
       - app-network
     healthcheck:
@@ -14,21 +16,45 @@ services:
       interval: 2s
       timeout: 5s
       retries: 10
+    profiles:
+      - postgres
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: gamecenter
+      MYSQL_USER: sysdba
+      MYSQL_PASSWORD: masterkey
+      MYSQL_ROOT_PASSWORD: masterkey
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "sysdba", "-pmasterkey"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+    profiles:
+      - mysql
 
   backend:
     build:
       context: ../backend
       dockerfile: Dockerfile
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gamecenter
-      SPRING_DATASOURCE_USERNAME: sysdba
-      SPRING_DATASOURCE_PASSWORD: masterkey
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-postgres}
     ports:
       - "8080:8080"
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
+        required: false
+      mysql:
+        condition: service_healthy
+        required: false
     networks:
       - app-network
 
@@ -43,6 +69,7 @@ services:
 
 volumes:
   postgres_data:
+  mysql_data:
 
 networks:
   app-network:
