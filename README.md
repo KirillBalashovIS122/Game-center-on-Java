@@ -6,9 +6,9 @@
 
 ## **Технологии**
 
-- **Backend**: Spring Boot (Java 17), PostgreSQL
+- **Backend**: Spring Boot (Java 17), PostgreSQL, MySQL
 - **Frontend**: React, Vite
-- **Инфраструктура**: Docker, Docker Compose, Nginx
+- **Инфраструктура**: Docker, Docker Compose
 ---
 
 ## **Запуск проекта**
@@ -26,7 +26,7 @@
 
 ```bash
 git clone <https://github.com/KirillBalashovIS122/Game-center-on-Java.git>
-cd game-center
+cd Game-center-on-Java
 ```
 
 ### **3. Запуск через Docker Compose**
@@ -35,10 +35,16 @@ cd game-center
 ```bash
 cd docker
 ```
-- Запустить проект
+- Запустить проект c PostgreSQL
 ```bash
-docker-compose up --build
+COMPOSE_PROFILES=postgres ACTIVE_DB=postgres docker-compose up --build
 ```
+
+- ИЛИ запустить проект c MySQL
+```bash
+COMPOSE_PROFILES=mysql ACTIVE_DB=mysql docker-compose up --build
+```
+
 - После запуска откройте браузер и перейдите по адресу
 ```bash
 http://localhost:3000

@@ -15,7 +15,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U sysdba -d gamecenter"]
       interval: 2s
       timeout: 5s
-      retries: 10
+      retries: 20
+    restart: unless-stopped
     profiles:
       - postgres
 
@@ -36,7 +37,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "sysdba", "-pmasterkey"]
       interval: 2s
       timeout: 5s
-      retries: 10
+      retries: 20
+    restart: unless-stopped
     profiles:
       - mysql
 
@@ -45,7 +47,7 @@ services:
       context: ../backend
       dockerfile: Dockerfile
     environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-postgres}
+      SPRING_PROFILES_ACTIVE: ${ACTIVE_DB:-postgres}
     ports:
       - "8080:8080"
     depends_on:
@@ -57,6 +59,7 @@ services:
         required: false
     networks:
       - app-network
+    restart: unless-stopped
 
   frontend:
     build:
@@ -66,6 +69,7 @@ services:
       - "3000:3000"
     networks:
       - app-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
