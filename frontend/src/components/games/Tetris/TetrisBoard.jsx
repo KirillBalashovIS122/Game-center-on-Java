@@ -23,7 +23,7 @@ const TetrisBoard = ({ gameId, onGameOver }) => {
     const updateGameState = useCallback(async () => {
         try {
             const state = await GameService.getTetrisState(gameId);
-            console.log('Game State:', state); // Отладка состояния
+            console.log('Game State:', state);
             setGameState(state);
             if (state.gameOver) {
                 handleGameOver(state);
@@ -81,7 +81,7 @@ const TetrisBoard = ({ gameId, onGameOver }) => {
     const handleGameOver = (state) => {
         setScore(state?.score || 0);
         setShowNameModal(true);
-        console.log('Game Over triggered with state:', state); // Отладка завершения
+        console.log('Game Over triggered with state:', state);
     };
 
     const handleSaveResult = async () => {
@@ -111,7 +111,7 @@ const TetrisBoard = ({ gameId, onGameOver }) => {
         }
 
         if (gameState.currentPiece && !gameState.gameOver) {
-            console.log('Current Piece:', gameState.currentPiece, 'at (', gameState.pieceX, ',', gameState.pieceY, ')'); // Отладка текущей фигуры
+            console.log('Current Piece:', gameState.currentPiece, 'at (', gameState.pieceX, ',', gameState.pieceY, ')');
             for (let i = 0; i < gameState.currentPiece.length; i++) {
                 for (let j = 0; j < gameState.currentPiece[i].length; j++) {
                     const y = gameState.pieceY + i;
